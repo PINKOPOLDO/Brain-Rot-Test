@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 TEST BRAIN ROT - Il Test Che Non Volevi Fare</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.2) 0%, transparent 50%);
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-20px, -20px) rotate(1deg); }
+            66% { transform: translate(20px, -10px) rotate(-1deg); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(120, 119, 198, 0.2) 0%, rgba(255, 119, 198, 0.2) 100%);
+            color: white;
+            padding: 35px 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+            color: #e0e0e0;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00f260 0%, #0575e6 100%);
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 20px rgba(0, 242, 96, 0.5);
+        }
+
+        .question-container {
+            padding: 40px 30px;
+            min-height: 450px;
+            display: none;
+            color: white;
+        }
+
+        .question-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .question-number {
+            color: #0575e6;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .question-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 35px;
+            line-height: 1.4;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-size: 16px;
+            color: #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .option:hover::before {
+            left: 100%;
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, rgba(0, 242, 96, 0.2) 0%, rgba(5, 117, 230, 0.2) 100%);
+            color: white;
+            border-color: #0575e6;
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(5, 117, 230, 0.3);
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-prev {
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-prev:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #00f260 0%, #0575e6 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(5, 117, 230, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-next::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.3s;
+        }
+
+        .btn-next:hover::before {
+            left: 100%;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(5, 117, 230, 0.5);
+        }
+
+        .btn-next:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .result-container {
+            padding: 40px 30px;
+            text-align: center;
+            display: none;
+            color: white;
+        }
+
+        .result-container.active {
+            display: block;
+            animation: zoomIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .score-display {
+            font-size: 72px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff3838 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 8px rgba(255,56,56,0.4));
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .result-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .result-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .result-description {
+            font-size: 18px;
+            color: #e0e0e0;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .result-stats {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid #ff3838;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .stat-line {
+            font-size: 16px;
+            color: #fff;
+            margin: 12px 0;
+            font-weight: 600;
+        }
+
+        .stat-line strong {
+            color: #ff6b6b;
+        }
+
+        .comparison-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+
+        .comparison-text {
+            font-size: 18px;
+            color: #00f260;
+            font-weight: 700;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, rgba(0, 242, 96, 0.1) 0%, rgba(5, 117, 230, 0.1) 100%);
+            border: 1px solid rgba(0, 242, 96, 0.3);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-top: 30px;
+        }
+
+        .cta-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-text {
+            font-size: 16px;
+            margin-bottom: 25px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .price-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .price-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            flex: 1;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .price-box:hover {
+            transform: scale(1.05);
+            border-color: #00f260;
+            background: rgba(0, 242, 96, 0.1);
+        }
+
+        .price-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .price-amount {
+            font-size: 28px;
+            font-weight: 900;
+            color: #00f260;
+        }
+
+        .price-desc {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #00f260 0%, #0575e6 100%);
+            color: white;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: default;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 5px 20px rgba(0, 242, 96, 0.4); }
+            50% { box-shadow: 0 5px 40px rgba(0, 242, 96, 0.6); }
+        }
+
+        .warning-box {
+            background: rgba(255, 56, 56, 0.1);
+            border-left: 4px solid #ff3838;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .warning-title {
+            color: #ff6b6b;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .warning-text {
+            color: #e0e0e0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .success-box {
+            background: rgba(0, 242, 96, 0.1);
+            border-left: 4px solid #00f260;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .success-title {
+            color: #00f260;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .success-text {
+            color: #e0e0e0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .social-proof {
+            background: rgba(120, 119, 198, 0.1);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            font-size: 16px;
+            color: #e0e0e0;
+        }
+
+        .social-proof strong {
+            color: #00f260;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .test-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .test-badge-title {
+            font-size: 14px;
+            color: #00f260;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .test-badge-text {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 600px) {
+            .question-text {
+                font-size: 20px;
+            }
+            
+            .option {
+                padding: 15px;
+                font-size: 14px;
+            }
+            
+            .score-display {
+                font-size: 56px;
+            }
+
+            .price-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 TEST BRAIN ROT</h1>
+            <p>Il test ufficiale della dipendenza digitale che non volevi fare</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- Questions -->
+        <div id="question1" class="question-container active">
+            <div class="question-number">DOMANDA 1 DI 10</div>
+            <div class="question-text">Controlli il telefono appena sveglio?</div>
+            <div class="options">
+                <div class="option" data-points="0">No</div>
+                <div class="option" data-points="10">Sì</div>
+            </div>
+            <div class="button-container">
+                <button class="btn btn-prev" style="visibility: hidden;">Indietro</button>
+                <button class="btn btn-next" onclick="nextQuestion(1)" disabled>Avanti</button>
+            </div>
+        </div>
+
+        <div id="question2" class="question-container">
+            <div class="question-number">DOMANDA 2 DI 10</div>
+            <div class="question-text">Quanto spesso scrolli mentre mangi?</div>
+            <div class="options">
+                <div class="option" data-points="0">Mai</div>
+                <div class="option" data-points="3">Raramente</div>
+                <div class="option" data-points="6">Qualche volta</div>
+                <div class="option" data-points="8">Spesso</div>
+                <div class="option" data-points="10">Sempre</div>
+            </div>
+            <div class="button-container">
+                <button class="btn btn-prev" onclick="prevQuestion(2)">Indietro</button>
+                <button class="btn btn-next" onclick="nextQuestion(2)" disabled>Avanti</button>
+            </div>
+        </div>
+
+        <div id="question3" class="question-container">
+            <div class="question-number">DOMANDA 3 DI 10</div>
+            <div class="question-text">Quante volte sblocchi il telefono al giorno?</div>
+            <div class="options">
+                <div class="option" data-points="0">📱 10-20 volte</div>
+                <div class="option" data-points="3">😐 20-50 volte</div>
+                <div class="option" data-points="6">😰 50-100 volte</div>
+                <div class="option" data-points="8">🤯 100-150 volte</div>
+                <div class="option" data-points="10">💀 150+ volte (non so, troppe)</div>
+            </div>
+            <div class="button-container">
+                <button class="btn btn-prev" onclick="prevQuestion(3)">Indietro</button>
+                <button class="btn btn-next" onclick="nextQuestion(3)" disabled>Avanti</button>
+            </div>
+        </div>
+
+        <div id="question4" class="question-container">
+            <div class="question-number">DOMANDA 4 DI 10</div>
+            <div class="question-text">Riesci a guardare un film senza prendere il telefono?</div>
+            <div class="options">
+                <div class="option" data-points="10">🚫 Impossibile, lo prendo sempre</div>
+                <div class="option" data-points="7">📱 Lo controllo ogni 10-15 minuti</div>
+                <div class="option" data-points="4">🤳 Solo nelle scene noiose</div>
+                <div class="option" data-points="0">🎬 Sì, guardo tutto senza distrazioni</div>
+            </div>
+            <div class="button-container">
+                <button class="btn btn-prev" onclick="prevQuestion(4)">Indietro</button>
+                <button class="btn btn-next" onclick="nextQuestion(4)" disabled>Avanti</button>
+            </div>
+        </div>
+
+        <div id="question5" class="question-container">
+            <div class="question-number">DOMANDA 5 DI 10 - ⚠️ DOMANDA SHOCK</div>
+            <div class="question-text">Quante ore hai passato sui social IERI? (Controlla ora)</div>
+            <div class="options">
+                <div class="option" data-points="0">✨ Meno di 1 ora</div>
+                <div class="option" data-points="3">📊 1-2 ore</div>
+                <div class="option" data-points="6">😅 2-4 ore</div>
+                <div class="option" data-points="8">😰 4-6 ore</div>
+                <div class="option" data-points="10">💀 6+ ore (un'intera giornata lavorativa)</div>
+            </div>
+            <div class="button-container">
+                <button class="btn btn-prev" onclick="prevQuestion(5)">Indietro</button>
+                <button class="btn btn-next" onclick="nextQuestion(5)" disabled>Avanti</button>
+            </div>
+        </div>
+
+        <div id="question6" class="question-container">
+            <div class="question-number">DOMANDA 6 DI 10</div>
+            <div class="question-text">Ti addormenti scrollando?</div>
+            <div class="options">
+                <div class="option" data-points="10">😴 Ogni notte, finché non mi cade dalle mani</div>
+                <div class="option" data-points="7">📱 Quasi sempre</div>
+                <div class="option" data-points="4">🌙 A volte sì, a volte no</div>
+                <div class="option" data-points="0">🛏️ Mai, telefono spento prima di dormire</div>
+            </div>
+            <div class="button-container">
+                <button class="btn btn-prev" onclick="prevQuestion(6)">Indietro</button>
+                <button class="btn btn-next" onclick="nextQuestion(6)" disabled>Avanti</button>
+            </div>
+        </div>
+
+        <div id="question7" class="question-container">
+            <div class="question-number">DOMANDA 7 DI 10</div>
+            <div class="question-text">Usi il telefono in bagno?</div>
+            <div class="options">
+                <div class="option" data-points="10">🚽📱 SEMPRE, è il mio momento di scrolling</div>
+                <div class="option" data-points="7">😅 Spesso, porto automaticamente</div>
+                <div class="option" data-points="3">🤷 Qualche volta</div>
+                <div class="option" data-points="0">🚫 Mai, mi fa schifo</div>
+            </div>
+            <div class="button-container">
+                <button class="btn btn-prev" onclick="prevQuestion(7)">Indietro</button>
+                <button class="btn btn-next" onclick="nextQuestion(7)" disabled>Avanti</button>
+            </div>
+        </div>
+
+        <div id="question8" class="question-container">
+            <div class="question-number">DOMANDA 8 DI 10</div>
+            <div class="question-text">Come ti senti dopo 2 ore senza telefono?</div>
+            <div class="options">
+                <div class="option" data-points="10">😱 Ansia totale, DEVO controllarlo</div>
+                <div class="option" data-points="7">😰 Molto nervoso e irrequieto</div>
+                <div class="option" data-points="4">😕 Un po' a disagio</div>
+                <div class="option" data-points="0">😌 Normale o meglio del solito</div>
+            </div>
+            <div class="button-container">
+                <button class="btn btn-prev" onclick="prevQuestion(8)">Indietro</button>
+                <button class="btn btn-next" onclick="nextQuestion(8)" disabled>Avanti</button>
+            </div>
+        </div>
+
+        <div id="question9" class="question-container">
+            <div class="question-number">DOMANDA 9 DI 10</div>
+            <div class="question-text">Apri Instagram/TikTok anche SENZA notifiche?</div>
+            <div class="options">
+                <div class="option" data-points="10">🧟 In automatico, le dita vanno da sole</div>
+                <div class="option" data-points="7">🔄 Sì, per "controllare" cosa c'è di nuovo</div>
+                <div class="option" data-points="3">🔔 Solo quando ho notifiche</div>
+                <div class="option" data-points="0">📵 Non ho questi social/Li apro raramente</div>
+            </div>
+            <div class="button-container">
+                <button class="btn btn-prev" onclick="prevQuestion(9)">Indietro</button>
+                <button class="btn btn-next" onclick="nextQuestion(9)" disabled>Avanti</button>
+            </div>
+        </div>
+
+        <div id="question10" class="question-container">
+            <div class="question-number">DOMANDA 10 DI 10 - LA VERITÀ</div>
+            <div class="question-text">Hai MAI provato a ridurre l'uso del telefono?</div>
+            <div class="options">
+                <div class="option" data-points="10">💔 Sì, ho fallito sempre dopo pochi giorni</div>
+                <div class="option" data-points="8">😔 Sì, sono durato max una settimana</div>
+                <div class="option" data-points="5">💪 Sì, con qualche successo temporaneo</div>
+                <div class="option" data-points="2">✅ Sì e ci sono riuscito</div>
+                <div class="option" data-points="0">🎯 No, non ne ho bisogno</div>
+            </div>
+            <div class="button-container">
+                <button class="btn btn-prev" onclick="prevQuestion(10)">Indietro</button>
+                <button class="btn btn-next" onclick="calculateResult()" disabled>Calcola il Danno</button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="result-container">
+            <div style="font-size: 12px; opacity: 0.6; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; text-align: center; color: #00f260;">
+                BASTA SCROLLARE CLUB
+            </div>
+            <div class="result-emoji" id="resultEmoji"></div>
+            <div class="score-display" id="scoreDisplay"></div>
+            <div class="result-title" id="resultTitle"></div>
+            
+            <div class="comparison-box">
+                <div class="comparison-text" id="comparisonText"></div>
+            </div>
+            
+            <div class="result-description" id="resultDescription"></div>
+            
+            <div class="result-stats" id="resultStats"></div>
+            
+            <div class="warning-box" id="warningBox">
+                <div class="warning-title">⚠️ TRAIETTORIA ATTUALE:</div>
+                <div class="warning-text" id="warningText"></div>
+            </div>
+            
+            <div class="success-box" id="successBox">
+                <div class="success-title">✅ SE INIZI IL PERCORSO OGGI:</div>
+                <div class="success-text" id="successText"></div>
+            </div>
+            
+            <div class="social-proof">
+                <strong>75 persone</strong> hanno già iniziato il percorso.<br>
+                <strong>TUTTI</strong> stanno notando i cambiamenti.<br>
+                Hanno già identificato i loro <strong>trigger point</strong> grazie al primo articolo del programma.
+            </div>
+            
+            <div class="cta-section">
+                <div class="test-badge">
+                    <div class="test-badge-title">🔬 "IL TEST CHE NON VOLEVI FARE"</div>
+                    <div class="test-badge-text">Test ufficiale della dipendenza digitale riconosciuto da tutti gli enti mondiali</div>
+                </div>
+                
+                <div class="cta-title">🎯 IL TUO PIANO DI RECUPERO</div>
+                <div class="cta-text" id="ctaText"></div>
+                
+                <div class="price-container">
+                    <div class="price-box">
+                        <div class="price-label">💎 PERCORSO BASE</div>
+                        <div class="price-amount">5€/mese</div>
+                        <div class="price-desc">Programma completo + Community</div>
+                    </div>
+                    <div class="price-box">
+                        <div class="price-label">🚀 PERCORSO PREMIUM</div>
+                        <div class="price-amount">12€/mese</div>
+                        <div class="price-desc">Tutto + Supporto 24/7 + Bonus</div>
+                    </div>
+                </div>
+                
+                <a href="#" class="cta-button" id="ctaButton">SCEGLI IL TUO PERCORSO SU PATREON →</a>
+            </div>
+            
+            <button class="btn btn-next" style="margin-top: 30px; width: 100%;" onclick="restartTest()">⚠️ Rifai il Test</button>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        let totalQuestions = 10;
+        let answers = {};
+
+        // Initialize
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const container = this.closest('.question-container');
+                container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                container.querySelector('.btn-next').disabled = false;
+                
+                // Auto-advance for maximum flow (optional)
+                setTimeout(() => {
+                    const btn = container.querySelector('.btn-next');
+                    if (btn && !btn.disabled && container.classList.contains('active')) {
+                        // btn.click(); // Uncomment for auto-advance
+                    }
+                }, 300);
+            });
+        });
+
+        function updateProgress() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function nextQuestion(questionNum) {
+            const selected = document.querySelector(`#question${questionNum} .option.selected`);
+            if (selected) {
+                answers[questionNum] = parseInt(selected.dataset.points);
+                document.getElementById(`question${questionNum}`).classList.remove('active');
+                if (questionNum < totalQuestions) {
+                    currentQuestion = questionNum + 1;
+                    document.getElementById(`question${currentQuestion}`).classList.add('active');
+                    updateProgress();
+                }
+            }
+        }
+
+        function prevQuestion(questionNum) {
+            document.getElementById(`question${questionNum}`).classList.remove('active');
+            currentQuestion = questionNum - 1;
+            document.getElementById(`question${currentQuestion}`).classList.add('active');
+            updateProgress();
+        }
+
+        function calculateResult() {
+            const selected = document.querySelector(`#question10 .option.selected`);
+            if (selected) {
+                answers[10] = parseInt(selected.dataset.points);
+            }
+
+            let totalScore = 0;
+            for (let i = 1; i <= 10; i++) {
+                totalScore += answers[i] || 0;
+            }
+
+            document.getElementById('question10').classList.remove('active');
+            showResult(totalScore);
+        }
+
+        function showResult(score) {
+            const resultsDiv = document.getElementById('results');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultEmoji = document.getElementById('resultEmoji');
+            const resultDescription = document.getElementById('resultDescription');
+            const resultStats = document.getElementById('resultStats');
+            const comparisonText = document.getElementById('comparisonText');
+            const warningText = document.getElementById('warningText');
+            const successText = document.getElementById('successText');
+            const ctaText = document.getElementById('ctaText');
+
+            scoreDisplay.textContent = score + ' PUNTI';
+
+            // Get specific answers for personalization
+            const hoursYesterday = answers[5]; // Question 5 about hours yesterday
+            const unlockTimes = answers[3]; // Question 3 about unlock times
+            const sleepScroll = answers[6]; // Question 6 about sleeping while scrolling
+            const triedToQuit = answers[10]; // Question 10 about trying to quit
+
+            // Calculate actual hours/days based on their ACTUAL answer to question 5
+            let hoursPerDay = 0;
+            let daysPerYear = 0;
+            let hoursPerYear = 0;
+            
+            if (hoursYesterday === 0) {
+                hoursPerDay = 0.5;
+            } else if (hoursYesterday === 3) {
+                hoursPerDay = 1.5;
+            } else if (hoursYesterday === 6) {
+                hoursPerDay = 3;
+            } else if (hoursYesterday === 8) {
+                hoursPerDay = 5;
+            } else if (hoursYesterday === 10) {
+                hoursPerDay = 7;
+            }
+            
+            hoursPerYear = Math.round(hoursPerDay * 365);
+            daysPerYear = Math.round(hoursPerYear / 24);
+
+            // Calculate percentile based on score
+            let percentile = 0;
+            if (score <= 15) percentile = 99;
+            else if (score <= 30) percentile = 85;
+            else if (score <= 45) percentile = 70;
+            else if (score <= 60) percentile = 50;
+            else if (score <= 80) percentile = 25;
+            else percentile = 10;
+
+            // Simple, flowing personalized message based on their answers
+            let personalizedMessage = `Basandoti sulle tue risposte, probabilmente stai perdendo circa <strong>${hoursPerDay} ore al giorno</strong> scrollando. `;
+            
+            if (daysPerYear > 60) {
+                personalizedMessage += `Sono <strong>${daysPerYear} giorni interi</strong> all'anno - praticamente ${(daysPerYear/30).toFixed(1)} mesi della tua vita che svaniscono ogni anno. `;
+            } else if (daysPerYear > 30) {
+                personalizedMessage += `In un anno, sono <strong>${daysPerYear} giorni completi</strong> - più di un mese intero. `;
+            } else if (daysPerYear > 0) {
+                personalizedMessage += `Anche se sembrano poche, in un anno diventano <strong>${daysPerYear} giorni</strong>. `;
+            }
+
+            if (triedToQuit >= 8) {
+                personalizedMessage += `E dalla tua risposta, sembra che tu abbia già provato a cambiare senza successo duraturo. `;
+            }
+
+            if (sleepScroll >= 7) {
+                personalizedMessage += `Addormentarsi scrollando ogni notte probabilmente non aiuta la qualità del tuo riposo. `;
+            }
+
+            personalizedMessage += `<br><br>Immagina cosa potresti fare con ${hoursPerDay} ore in più ogni giorno.`;
+
+            if (score <= 15) {
+                resultEmoji.textContent = '🏆';
+                resultTitle.textContent = 'OTTIMO CONTROLLO';
+                comparisonText.textContent = `Probabilmente nel top 1% degli utenti`;
+                resultDescription.innerHTML = personalizedMessage;
+                resultStats.innerHTML = `<div class="stat-line">Il tuo uso sembra già molto equilibrato. Potresti solo ottimizzare alcuni dettagli per essere ancora più produttivo.</div>`;
+                warningText.textContent = 'Mantieni questo equilibrio. È raro al giorno d\'oggi.';
+                successText.textContent = 'Scopri tecniche avanzate per chi ha già controllo ma vuole il massimo.';
+                ctaText.textContent = 'Perfeziona quello che già funziona.';
+            } else if (score <= 30) {
+                resultEmoji.textContent = '💪';
+                resultTitle.textContent = 'USO MODERATO';
+                comparisonText.textContent = `Meglio di molti, ma c'è margine di miglioramento`;
+                resultDescription.innerHTML = personalizedMessage;
+                resultStats.innerHTML = `<div class="stat-line">Con piccoli aggiustamenti potresti recuperare almeno ${Math.round(hoursPerDay/2)} ora al giorno per le cose che ami davvero.</div>`;
+                warningText.textContent = `Quei ${daysPerYear} giorni all'anno potrebbero essere investiti in qualcosa di più significativo.`;
+                successText.textContent = 'Chi partiva da qui ora ha 1-2 ore in più al giorno per i propri progetti.';
+                ctaText.textContent = 'Se ti riconosci, probabilmente vale la pena esplorare il percorso.';
+            } else if (score <= 45) {
+                resultEmoji.textContent = '📱';
+                resultTitle.textContent = 'USO INTENSO';
+                comparisonText.textContent = `Nella media, ma la media non è positiva`;
+                resultDescription.innerHTML = personalizedMessage;
+                resultStats.innerHTML = `<div class="stat-line">Probabilmente senti già che il tempo ti sfugge. ${hoursPerDay} ore al giorno sono tante quando le sommi.</div>`;
+                warningText.textContent = `${daysPerYear} giorni all'anno sono ${daysPerYear * 10} giorni in 10 anni. Un anno intero della tua vita.`;
+                successText.textContent = `Molti hanno dimezzato il loro tempo di scrolling in poche settimane.`;
+                ctaText.textContent = 'Il percorso può aiutarti a recuperare il tuo tempo.';
+            } else if (score <= 60) {
+                resultEmoji.textContent = '⏰';
+                resultTitle.textContent = 'USO MOLTO INTENSO';
+                comparisonText.textContent = `Sopra la media - È ora di agire`;
+                resultDescription.innerHTML = personalizedMessage;
+                resultStats.innerHTML = `<div class="stat-line">${hoursPerDay} ore al giorno significano che passi più tempo online che facendo qualsiasi altra attività oltre al dormire.</div>`;
+                warningText.textContent = `A questo ritmo, nei prossimi 5 anni perderai ${(daysPerYear * 5 / 365).toFixed(1)} anni interi scrollando.`;
+                successText.textContent = `Chi usava ${hoursPerDay} ore come te ora ne usa meno della metà.`;
+                ctaText.textContent = 'Se vuoi davvero cambiare, il percorso ti dà un metodo concreto.';
+            } else if (score <= 80) {
+                resultEmoji.textContent = '🔄';
+                resultTitle.textContent = 'USO COMPULSIVO';
+                comparisonText.textContent = `Nel 25% che usa di più`;
+                resultDescription.innerHTML = personalizedMessage;
+                resultStats.innerHTML = `<div class="stat-line">Con ${hoursPerDay} ore al giorno, lo scrolling è diventato la tua attività principale. Probabilmente lo sai già.</div>`;
+                warningText.textContent = `${daysPerYear} giorni all'anno sono tantissimi. È come cancellare ${(daysPerYear/30).toFixed(1)} mesi ogni anno.`;
+                successText.textContent = `Anche partendo da ${hoursPerDay} ore al giorno, in 30 giorni puoi dimezzarle.`;
+                ctaText.textContent = 'Il percorso è progettato proprio per situazioni come la tua.';
+            } else {
+                resultEmoji.textContent = '🆘';
+                resultTitle.textContent = 'USO ESTREMO';
+                comparisonText.textContent = `Nel 10% più alto`;
+                resultDescription.innerHTML = personalizedMessage;
+                resultStats.innerHTML = `<div class="stat-line">Oltre ${hoursPerDay} ore al giorno online significa che vivi più nel digitale che nel reale.</div>`;
+                warningText.textContent = `Con questo ritmo, in 10 anni avrai passato ${(daysPerYear * 10 / 365).toFixed(1)} anni interi - letteralmente anni - scrollando.`;
+                successText.textContent = `Anche da qui si può uscire. Il percorso parte proprio dalle basi.`;
+                ctaText.textContent = 'Non è mai troppo tardi per riprendere controllo.';
+            }
+
+            resultsDiv.classList.add('active');
+            updateProgress();
+            
+            // Scroll to top of results
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function restartTest() {
+            currentQuestion = 1;
+            answers = {};
+            document.getElementById('results').classList.remove('active');
+            document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active'));
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.btn-next').forEach(btn => {
+                if (!btn.textContent.includes('Rifai')) {
+                    btn.disabled = true;
+                }
+            });
+            document.getElementById('question1').classList.add('active');
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        // Initialize progress
+        updateProgress();
+    </script>
+</body>
+</html>
